@@ -139,6 +139,18 @@ class Bomb:
             self.vy *= -1
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
+    
+class Score:
+    def __init__(self, score=0):
+        self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        self.coler = (0, 0, 255)
+        self.score = score
+        self.img = self.fonto.render(f"スコア：{self.score}", 0, self.coler)
+        self.center = (100, HEIGHT - 50)
+    
+    def update(self,screen):
+        self.img = self.fonto.render(f"スコア：{self.score}", 0, self.coler)
+        screen.blit(self.img, self.center)
 
 
 def main():
@@ -150,6 +162,7 @@ def main():
     #bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     clock = pg.time.Clock()
+    sc = Score()
     tmr = 0
     while True:
         for event in pg.event.get():
@@ -177,11 +190,13 @@ def main():
         for i in range(len(bombs)):
             if beam is not None:
                 if bombs[i].rct.colliderect(beam.rct):
+                    sc.score += 1
                     bombs[i] = None
                     beam = None
 
                     bird.change_img(6, screen)
-        
+        sc.update(screen)
+
         bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
